@@ -23,7 +23,7 @@
 		<div class="container-fluid">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
-				<a class="navbar-brand" href="#">Slipp</a>
+				<a class="navbar-brand" href="index.html">Slipp</a>
 			</div>
 
 			<!-- Collect the nav links, forms, and other content for toggling -->
@@ -49,16 +49,13 @@
 				</tr>
 			</thead>
 			<tbody>
+				{{#users}}
 				<tr>
-					<th scope="row">Javajigi</th>
-					<th>JAVA JIGI</th>
-					<th>javajigi@test.com</th>
+					<th scope="row">{{userId}}</th>
+					<th>{{name}}</th>
+					<th>{{email}}</th>
 				</tr>
-				<tr>
-					<th scope="row">sooyong</th>
-					<th>kim sooyong</th>
-					<th>sooyong@test.com</th>
-				</tr>
+				{{/users}}
 			</tbody>
 		</table>
 	</div>
