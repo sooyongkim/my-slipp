@@ -30,11 +30,17 @@ public class User {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	
+	
 	public void setName(String name) {
 		this.name = name;
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getPassword() {
+		return password;
 	}
 	public void setEmail(String email) {
 		this.email = email;
