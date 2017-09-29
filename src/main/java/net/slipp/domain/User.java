@@ -14,7 +14,7 @@ public class User {
 
 	@Id
 	@GeneratedValue
-	@Column(name="id")
+	@Column(name="id", unique=true)
 	private Long id;
 	
 	@Column(name="userId", nullable=false, length=20)
@@ -27,10 +27,15 @@ public class User {
 	private String email;
 	
 	
+	public Long getId() {
+		return id;
+	}
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	
+	public String getUserId() {
+		return userId;
+	}
 	
 	public void setName(String name) {
 		this.name = name;
@@ -57,6 +62,5 @@ public class User {
 		this.name = updatedUser.name;
 		this.email = updatedUser.email;
 	}
-	
-	
+
 }

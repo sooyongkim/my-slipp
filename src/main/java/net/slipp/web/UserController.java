@@ -1,6 +1,7 @@
 package net.slipp.web;
 
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.websocket.Session;
 
@@ -50,14 +51,14 @@ public class UserController {
 			return "redirect:/users/loginForm";
 		}
 		System.out.println("Login Success!");
-		session.setAttribute("user", user);
+		session.setAttribute("sessionedId", user);
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session){
 	
-		session.removeAttribute("user");
+		session.removeAttribute("sessionedId");
 		return "redirect:/";
 	}
 	
@@ -77,15 +78,35 @@ public class UserController {
 		return "/user/list";
 	}
 	@GetMapping("/{id}/form")
-	public String updateForm(@PathVariable Long id, Model model){
-		
+	public String updateForm(@PathVariable Long id, Model model, HttpSession session){
+//		현 로인한 유저 정보를 가져온
+		User tempUser = (User) session.getAttribute("sessionedId");
+//		로인한 유저 정보가 없을 경우 로인폼으로 이
+		if(tempUser == null){
+			return "redirect:/user/loginForm";
+		}
+//		로그인한 유저 아이디와 브라우저에서 요청한 아이디를 비교한다.
+		if(!tempUser.getId().equals(id)){
+			throw new IllegalStateException("It is not accessable data!");
+		}
+//		User sessionedUser = tempUser;
+//		로그인 아이디와 요청 아이디가 같으면 요청 아이디를 이용하여 데이터 베이스에서 사용자 정보를 가져온
 		User user = userRepository.findOne(id);
+		
 		model.addAttribute("user", user);
 		return "/user/updateForm";
 	}
 	
 	@PutMapping("/{id}/update")
-	public String userUpdate(@PathVariable Long id, User updatedUser){
+	public String userUpdate(@PathVariable Long id, User updatedUser, HttpSession session){
+		
+		User tempUser = (User) session.getAttribute("sessionedId");
+		if(tempUser==null){
+			return "redirect:/user/loginForm";
+		}
+		if(!id.equals(tempUser.getId())){
+			throw new IllegalStateException("You cannot access the data!");
+		}
 		User user = userRepository.findOne(id);
 		user.update(updatedUser);
 		userRepository.save(user);
