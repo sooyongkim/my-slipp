@@ -1,6 +1,8 @@
 package net.slipp.domain;
 
 
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,9 +28,19 @@ public class User {
 	@Column(name="email",length=20)
 	private String email;
 	
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	public Long getId() {
 		return id;
+	}
+	public boolean matchId(Long newId) {
+
+		if(newId==null){
+			return false;
+		}
+		return newId.equals(id);
 	}
 	public void setUserId(String userId) {
 		this.userId = userId;
@@ -42,6 +54,13 @@ public class User {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public boolean matchPassword(String newPassword) {
+		
+		if(password==null){
+			return false;
+		}
+		return newPassword.equals(password);
 	}
 	
 	public String getPassword() {

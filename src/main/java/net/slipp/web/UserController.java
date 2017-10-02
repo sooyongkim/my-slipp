@@ -1,9 +1,7 @@
 package net.slipp.web;
 
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,24 +39,26 @@ public class UserController {
 	public String login(String userId, String password, HttpSession session){
 		User user = userRepository.findByUserId(userId);
 		
-		if(user == null){
+		if(user==null){
 			System.out.println("Login failed!");
 			return "redirect:/users/loginForm";
 		}
 		
-		if(!user.getPassword().equals(password)){
+//		User user = HttpSessionUtils.getUserFromSession(session);
+		
+		if(!user.matchPassword(password)){
 			System.out.println("Login failed!");
 			return "redirect:/users/loginForm";
 		}
 		System.out.println("Login Success!");
-		session.setAttribute("sessionedId", user);
+		session.setAttribute(HttpSessionUtils.USER_SESSION_KEY, user);
 		return "redirect:/";
 	}
 	
 	@GetMapping("/logout")
 	public String logout(HttpSession session){
 	
-		session.removeAttribute("sessionedId");
+		session.removeAttribute(HttpSessionUtils.USER_SESSION_KEY);
 		return "redirect:/";
 	}
 	
@@ -80,31 +80,34 @@ public class UserController {
 	@GetMapping("/{id}/form")
 	public String updateForm(@PathVariable Long id, Model model, HttpSession session){
 //		현 로인한 유저 정보를 가져온
-		User tempUser = (User) session.getAttribute("sessionedId");
+//		User sessionedUser = (User) session.getAttribute(HttpSessionUtils.USER_SESSION_KEY);
 //		로인한 유저 정보가 없을 경우 로인폼으로 이
-		if(tempUser == null){
+		if(!HttpSessionUtils.isLoginUser(session)){
 			return "redirect:/user/loginForm";
 		}
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		
 //		로그인한 유저 아이디와 브라우저에서 요청한 아이디를 비교한다.
-		if(!tempUser.getId().equals(id)){
+		if(!sessionedUser.matchId(id)){
 			throw new IllegalStateException("It is not accessable data!");
 		}
 //		User sessionedUser = tempUser;
 //		로그인 아이디와 요청 아이디가 같으면 요청 아이디를 이용하여 데이터 베이스에서 사용자 정보를 가져온
-		User user = userRepository.findOne(id);
+		User loginUser = userRepository.findOne(id);
 		
-		model.addAttribute("user", user);
+		model.addAttribute("loginUser", loginUser);
 		return "/user/updateForm";
 	}
 	
-	@PutMapping("/{id}/update")
-	public String userUpdate(@PathVariable Long id, User updatedUser, HttpSession session){
+	@PutMapping("/{id}")
+	public String update(@PathVariable Long id, User updatedUser, HttpSession session){
 		
-		User tempUser = (User) session.getAttribute("sessionedId");
-		if(tempUser==null){
+//		User tempUser = (User) session.getAttribute("sessionedUser");
+		User sessionedUser = HttpSessionUtils.getUserFromSession(session);
+		if(!HttpSessionUtils.isLoginUser(session)){
 			return "redirect:/user/loginForm";
 		}
-		if(!id.equals(tempUser.getId())){
+		if(!sessionedUser.matchId(id)){
 			throw new IllegalStateException("You cannot access the data!");
 		}
 		User user = userRepository.findOne(id);
