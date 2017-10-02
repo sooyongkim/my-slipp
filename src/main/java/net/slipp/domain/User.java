@@ -1,7 +1,6 @@
 package net.slipp.domain;
 
 
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
